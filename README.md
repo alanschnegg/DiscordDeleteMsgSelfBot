@@ -1,4 +1,4 @@
-# Discord Delete Msg Bot
+# Discord Delete Msg SelfBot
 
 Delete all your messages from a Discord channel and/or server.
 
@@ -13,6 +13,7 @@ Be sure to set your Discord token in .env file.\
     git clone git@github.com:alanschnegg/DiscordDeleteMsgSelfBot.git
     cd DiscordDeleteMsgSelfBot
     npm install
+    npm run fix
 
 
 ## Usage
