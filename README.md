@@ -14,10 +14,11 @@ Be sure to set your Discord token in .env file.\
     cd DiscordDeleteMsgSelfBot
     npm install
     npm run fix
+    cp .env.example .env
 
 
 ## Usage
-    Usage: node index.js [OPTION]...
+    node index.js [OPTION]...
 
 
 ## Options
