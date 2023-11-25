@@ -57,6 +57,33 @@ const deleteAllMsgFromServer = async (serverId) => {
 }
 
 
+const deleteAllMsgFromChannel = async (channelId) => {
+    const channel = blitzcrank.channels.get(channelId)
+    if (!channel) {
+        console.log(`ERROR: channel with id '${channelId}' not found`)
+        return(1)
+    }
+
+    const validation = prompt(`Are you sure you want to delete all your messages from the channel '${channel.name}' of the server '${channel.guild.name}' ? (y/N) : `);
+    if (validation !== 'y' && validation !== 'Y') {
+        console.log(`Deletion of your messages from channel '${channel.name}' of the server '${channel.guild.name}' canceled.`)
+        return(0)
+    }
+
+
+    await channel.fetchMessages().then(async messages => {
+        await Promise.all(
+            messages
+                .filter(message => message.member?.user.id === blitzcrank.user.id)
+                .map(async message => {
+                    await message.delete() && console.log(`[DELETED] (${message.id}): ${message.content}`)
+                })
+        )
+    });
+}
+
+
+
 
 blitzcrank.on('ready', async () => {
     console.log('Fired up and ready to serve.\n')
@@ -66,7 +93,7 @@ blitzcrank.on('ready', async () => {
     await Promise.all(
         options.map(async option => {
             if (option.type === OPTION.SERVER) return await deleteAllMsgFromServer(option.id)
-            else console.log('channel')
+            else return await deleteAllMsgFromChannel(option.id)
         })
     )
 
