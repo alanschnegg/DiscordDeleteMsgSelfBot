@@ -45,7 +45,7 @@ const deleteFromChannel = async (channel) => {
                     await message.delete() && totalMessageDeleted++ && console.log(`[DELETED] (${message.id}): ${message.content}`)
                 })
         )
-        last_id = messages.last().id;
+        last_id = messages.last()?.id;
 
         if (messages.size !== 100) {
             break;
@@ -73,19 +73,7 @@ const optionByServerId = async (serverId) => {
 
     const channels = server.channels.filter(channel => channel.type === 'text');
 
-    await Promise.all(
-        channels.map(async channel => {
-            await channel.fetchMessages().then(async messages => {
-                await Promise.all(
-                    messages
-                        .filter(message => message.member?.user.id === blitzcrank.user.id)
-                        .map(async message => {
-                            await message.delete() && console.log(`[DELETED] (${message.id}): ${message.content}`)
-                        })
-                )
-            });
-        })
-    )
+    await Promise.all(channels.map(async channel => await deleteFromChannel(channel)))
 }
 
 const optionByChannelId = async (channelId) => {
@@ -100,7 +88,6 @@ const optionByChannelId = async (channelId) => {
         console.log(`Deletion of your messages from channel '${channel.name}' of the server '${channel.guild.name}' canceled.`)
         return(0)
     }
-
 
     await deleteFromChannel(channel)
 }
