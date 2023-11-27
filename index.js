@@ -15,6 +15,10 @@ if (!TOKEN) {
 }
 
 
+
+/******************************
+    SECONDARY FUNCTIONS
+*******************************/
 const parse = () => {
     return process.argv
         .filter(arg => arg.startsWith('-s=') || arg.startsWith('-c='))
@@ -26,7 +30,35 @@ const parse = () => {
         })
 }
 
-const deleteAllMsgFromServer = async (serverId) => {
+const deleteFromChannel = async (channel) => {
+    let last_id;
+
+    while (true) {
+        const options = { limit: 100 };
+        if (last_id) options.before = last_id;
+
+        const messages = await channel.fetchMessages(options);
+        await Promise.all(
+            messages
+                .filter(message => message.member?.user.id === blitzcrank.user.id)
+                .map(async message => {
+                    await message.delete() && totalMessageDeleted++ && console.log(`[DELETED] (${message.id}): ${message.content}`)
+                })
+        )
+        last_id = messages.last().id;
+
+        if (messages.size !== 100) {
+            break;
+        }
+    }
+}
+
+
+
+/******************************
+       PRIMARY FUNCTIONS
+*******************************/
+const optionByServerId = async (serverId) => {
     const server = blitzcrank.guilds.get(serverId)
     if (!server) {
         console.log(`ERROR: server with id '${serverId}' not found`)
@@ -56,8 +88,7 @@ const deleteAllMsgFromServer = async (serverId) => {
     )
 }
 
-
-const deleteAllMsgFromChannel = async (channelId) => {
+const optionByChannelId = async (channelId) => {
     const channel = blitzcrank.channels.get(channelId)
     if (!channel) {
         console.log(`ERROR: channel with id '${channelId}' not found`)
@@ -71,19 +102,14 @@ const deleteAllMsgFromChannel = async (channelId) => {
     }
 
 
-    await channel.fetchMessages().then(async messages => {
-        await Promise.all(
-            messages
-                .filter(message => message.member?.user.id === blitzcrank.user.id)
-                .map(async message => {
-                    await message.delete() && console.log(`[DELETED] (${message.id}): ${message.content}`)
-                })
-        )
-    });
+    await deleteFromChannel(channel)
 }
 
 
-
+/******************************
+        MAIN LOOP
+*******************************/
+let totalMessageDeleted = 0;
 
 blitzcrank.on('ready', async () => {
     console.log('Fired up and ready to serve.\n')
@@ -92,11 +118,13 @@ blitzcrank.on('ready', async () => {
 
     await Promise.all(
         options.map(async option => {
-            if (option.type === OPTION.SERVER) return await deleteAllMsgFromServer(option.id)
-            else return await deleteAllMsgFromChannel(option.id)
+            if (option.type === OPTION.SERVER) return await optionByServerId(option.id)
+            else return await optionByChannelId(option.id)
         })
     )
 
+    console.log(`\nMessage deleted: ${totalMessageDeleted}`)
+    console.log('Exterminate. Exterminate.')
     process.exit(0)
 });
 
