@@ -71,7 +71,7 @@ const optionByServerId = async (serverId) => {
         return(0)
     }
 
-    const channels = server.channels.filter(channel => channel.type === 'text');
+    const channels = server.channels.filter(channel => channel.type === 'text' && channel.permissionsFor(server.me).has(['READ_MESSAGE_HISTORY', 'VIEW_CHANNEL']));
 
     await Promise.all(channels.map(async channel => await deleteFromChannel(channel)))
 }
@@ -80,6 +80,9 @@ const optionByChannelId = async (channelId) => {
     const channel = blitzcrank.channels.get(channelId)
     if (!channel) {
         console.log(`ERROR: channel with id '${channelId}' not found`)
+        return(1)
+    } else if (!channel.permissionsFor(server.me).has(['READ_MESSAGE_HISTORY', 'VIEW_CHANNEL'])) {
+        console.log(`ERROR: channel found but no access`)
         return(1)
     }
 
