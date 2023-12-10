@@ -37,18 +37,22 @@ const deleteFromChannel = async (channel) => {
         const options = { limit: 100 };
         if (last_id) options.before = last_id;
 
-        const messages = await channel.fetchMessages(options);
-        await Promise.all(
-            messages
-                .filter(message => message.member?.user.id === blitzcrank.user.id)
-                .map(async message => {
-                    await message.delete() && totalMessageDeleted++ && console.log(`[DELETED] (${message.id}): ${message.content}`)
-                })
-        )
-        last_id = messages.last()?.id;
+        try {
+            const messages = await channel.fetchMessages(options);
+            await Promise.all(
+                messages
+                    .filter(message => message.member?.user.id === blitzcrank.user.id)
+                    .map(async message => {
+                        await message.delete() && totalMessageDeleted++ && console.log(`[DELETED] (${message.id}): ${message.content}`)
+                    })
+            )
+            last_id = messages.last()?.id;
 
-        if (messages.size !== 100) {
-            break;
+            if (messages.size !== 100) {
+                break;
+            }
+        } catch (e) {
+            console.error(`[DEBUG]: ${e}`)
         }
     }
 }

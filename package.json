@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "fix": "cp fix/ClientDataManager.js node_modules/discord.js/src/client/ClientDataManager.js"
+    "fix": "cp fix/ClientDataManager.js node_modules/discord.js/src/client/ClientDataManager.js && cp fix/MessageCreate.js node_modules/discord.js/src/client/actions/MessageCreate.js"
   },
   "dependencies": {
     "@discordjs/core": "^1.0.0",
