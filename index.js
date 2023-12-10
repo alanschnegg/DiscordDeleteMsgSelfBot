@@ -81,7 +81,7 @@ const optionByChannelId = async (channelId) => {
     if (!channel) {
         console.log(`ERROR: channel with id '${channelId}' not found`)
         return(1)
-    } else if (!channel.permissionsFor(server.me).has(['READ_MESSAGE_HISTORY', 'VIEW_CHANNEL'])) {
+    } else if (!channel.permissionsFor(channel.guild.me).has(['READ_MESSAGE_HISTORY', 'VIEW_CHANNEL'])) {
         console.log(`ERROR: channel found but no access`)
         return(1)
     }
