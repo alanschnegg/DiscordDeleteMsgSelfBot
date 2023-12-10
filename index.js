@@ -75,7 +75,7 @@ const optionByServerId = async (serverId) => {
         return(0)
     }
 
-    const channels = server.channels.filter(channel => channel.type === 'text' && channel.permissionsFor(server.me).has(['READ_MESSAGE_HISTORY', 'VIEW_CHANNEL']));
+    const channels = server.channels.filter(channel => ['text', 'news'].includes(channel.type) && channel.permissionsFor(server.me).has(['READ_MESSAGE_HISTORY', 'VIEW_CHANNEL']));
 
     await Promise.all(channels.map(async channel => await deleteFromChannel(channel)))
 }
